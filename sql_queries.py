@@ -1,11 +1,11 @@
 import configparser
 
-
 # CONFIG
 config = configparser.ConfigParser()
 config.read('dwh.cfg')
 
-# DROP TABLES
+# DROP TABLES QUERIES
+# These queries drop staging, fact, and dimension tables if they already exist.
 
 staging_events_table_drop = "DROP TABLE IF EXISTS staging_events"
 staging_songs_table_drop = "DROP TABLE IF EXISTS staging_songs"
@@ -15,7 +15,8 @@ song_table_drop = "DROP TABLE IF EXISTS songs"
 artist_table_drop = "DROP TABLE IF EXISTS artists"
 time_table_drop = "DROP TABLE IF EXISTS time"
 
-# CREATE TABLES
+# CREATE TABLES QUERIES
+# These queries create staging, fact, and dimension tables.
 
 staging_events_table_create = ("""
 CREATE TABLE IF NOT EXISTS staging_events (
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS staging_songs (
 );
 """)
 
+# Fact table for songplay events
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS songplays (
     songplay_id INT IDENTITY(0,1) PRIMARY KEY,
@@ -69,6 +71,7 @@ CREATE TABLE IF NOT EXISTS songplays (
 );
 """)
 
+# Dimension tables for users, songs, artists, and time.
 user_table_create = ("""
 CREATE TABLE IF NOT EXISTS users (
     user_id    INTEGER PRIMARY KEY,
@@ -111,7 +114,8 @@ CREATE TABLE IF NOT EXISTS time (
 );
 """)
 
-# STAGING TABLES
+# STAGING TABLES COPY QUERIES
+# Queries to load data from S3 buckets into staging tables.
 
 staging_events_copy = ("""
 COPY staging_events FROM '{}'
@@ -128,7 +132,8 @@ JSON 'auto';
 """).format(config['S3']['SONG_DATA'], config['IAM_ROLE']['ARN'])
 
 
-# FINAL TABLES
+# FINAL TABLES INSERT QUERIES
+# Insert queries to transform data from staging tables into analytics tables.
 
 songplay_table_insert = ("""
 INSERT INTO songplays (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
@@ -158,7 +163,6 @@ SELECT DISTINCT
 FROM staging_events
 WHERE page = 'NextSong' AND userId IS NOT NULL;
 """)
-
 
 song_table_insert = ("""
 INSERT INTO songs (song_id, title, artist_id, year, duration)
@@ -199,6 +203,7 @@ WHERE page = 'NextSong';
 """)
 
 # QUERY LISTS
+# Lists of queries for easy execution in other scripts.
 
 create_table_queries = [
     staging_events_table_create, 

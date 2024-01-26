@@ -7,6 +7,13 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def load_staging_tables(cur, conn):
+    """
+    Loads data from S3 into staging tables in the Redshift cluster.
+
+    Parameters:
+        cur: Database cursor.
+        conn: Database connection object.
+    """
     for query in copy_table_queries:
         try:
             start_time = time.time()
@@ -18,6 +25,13 @@ def load_staging_tables(cur, conn):
             logging.error(f"Error loading staging table. Query - {query}. Error: {e}")
 
 def insert_tables(cur, conn):
+    """
+    Inserts data from staging tables into final analytics tables in the Redshift cluster.
+
+    Parameters:
+        cur: Database cursor.
+        conn: Database connection object.
+    """
     for query in insert_table_queries:
         try:
             start_time = time.time()
@@ -29,6 +43,9 @@ def insert_tables(cur, conn):
             logging.error(f"Error inserting into table. Query - {query}. Error: {e}")
 
 def main():
+    """
+    Connects to the Redshift cluster and executes functions to load and insert data.
+    """
     config = configparser.ConfigParser()
 
     # Reading configuration file
