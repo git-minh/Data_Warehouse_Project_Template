@@ -4,8 +4,10 @@ import configparser
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.postgres_operator import PostgresOperator
-from dags.operators import (StageToRedshiftOperator, LoadFactOperator,
-                       LoadDimensionOperator, DataQualityOperator)
+from final_project_operators.stage_redshift import StageToRedshiftOperator
+from final_project_operators.load_fact import LoadFactOperator
+from final_project_operators.load_dimensions import LoadDimensionOperator
+from final_project_operators.data_quality import DataQualityOperator
 from dags.sql_queries import SqlQueries
 
 # Read configuration file
